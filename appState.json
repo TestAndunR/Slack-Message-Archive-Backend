@@ -1,0 +1,102 @@
+{
+  "EDITOR_STATE": {
+    "allProjectFiles": {
+      "59117187-76a7-4e3d-b0d1-e3dcc3f6d16c": {
+        "id": "59117187-76a7-4e3d-b0d1-e3dcc3f6d16c",
+        "parent": null,
+        "name": "slack_api",
+        "type": "DIRECTORY",
+        "isDirectory": true,
+        "children": [
+          "0a0b87a8-60b8-4743-8624-c874ecc33c0a"
+        ],
+        "isRemovable": false,
+        "filePath": "slack_api"
+      },
+      "0a0b87a8-60b8-4743-8624-c874ecc33c0a": {
+        "id": "0a0b87a8-60b8-4743-8624-c874ecc33c0a",
+        "parent": "59117187-76a7-4e3d-b0d1-e3dcc3f6d16c",
+        "name": "lambda.js",
+        "type": "LAMBDA_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "slack_api/lambda.js",
+        "code": "exports.handler = function(event, context, callback) {\n    \n    callback(null, {\"message\": \"Successfully executed\"});\n}",
+        "triggers": [
+          {
+            "resourceName": "apigusEast1slackapiany",
+            "config": {}
+          }
+        ],
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        }
+      }
+    },
+    "deletedFiles": [],
+    "rootNode": "59117187-76a7-4e3d-b0d1-e3dcc3f6d16c",
+    "openFiles": [
+      "0a0b87a8-60b8-4743-8624-c874ecc33c0a"
+    ],
+    "currentFileId": "0a0b87a8-60b8-4743-8624-c874ecc33c0a",
+    "resources": {
+      "apigusEast1slackapiany": {
+        "name": "apigusEast1slackapiany",
+        "type": "API_GATEWAY",
+        "config": {
+          "selectedRegion": "us-east-1",
+          "apiMode": 0,
+          "apiName": "slack_api",
+          "endpointType": "EDGE",
+          "resourceMode": 0,
+          "resourceName": "",
+          "resourcePath": "/",
+          "restMethod": "ANY",
+          "proxyIntegration": false,
+          "enableCORS": false,
+          "stageMode": 0,
+          "stageName": "prod"
+        },
+        "globallyEditable": false
+      }
+    },
+    "customTemplate": {
+      "dialect": null,
+      "definitions": {}
+    },
+    "envVariables": [
+      {
+        "lambdaId": "all",
+        "varKey": "SIGMA_AWS_ACC_ID",
+        "varValue": null,
+        "shouldPersist": false,
+        "displayOnly": false,
+        "editable": false
+      }
+    ],
+    "packageJSON": {
+      "dependencies": {}
+    }
+  },
+  "PROJECT_META": {
+    "projectName": "slack_api",
+    "projectDescription": "",
+    "projectVersion": "1.0.0",
+    "projectRegion": "us-east-1",
+    "platform": "AWS",
+    "platformRegions": {},
+    "lastSave": 1550480538550
+  },
+  "VCS_STATE": {
+    "provider": "GitHub",
+    "repo": {
+      "name": "slack_api",
+      "url": "https://github.com/TestAndunR/slack_api"
+    }
+  }
+}
