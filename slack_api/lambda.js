@@ -1,9 +1,8 @@
 exports.handler = function (event, context, callback) {
-    console.log(event);
-    let response = {
-        "isBase64Encoded": true,
-        "statusCode": 200,
-        "body": { "challenge": event.challenge }
-    }
-    callback(null, response);
+    if (event.challenge) {
+       callback(null, {"challenge": event.challenge});
+       return;
+   }
+   console.log(event)
+   callback(null, {"message":"Success"})
 }
