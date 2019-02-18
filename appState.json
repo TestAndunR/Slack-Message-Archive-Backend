@@ -55,7 +55,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "slack_api/getText.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    let text = event.queryStringParameters.text;\n    console.log(text);\n    \n    ddb.scan({\n        TableName: 'slack_messages',\n        ExpressionAttributeValues: {\n            ':text': text\n        },\n        FilterExpression: \"contains(message, :text)\"\n    }).promise().then(function (data) {\n        //your logic goes here\n        console.log(data);\n        let reponse = {\n            \"isBase64Encoded\": true,\n            \"statusCode\": 200,\n            \"headers\": {\n                \"headerName\": \"headerValue\"\n            },\n            \"body\": JSON.stringify(data.Items)\n        }\n        callback(null, reponse)\n    }).catch(function (err) {\n        //handle error\n        console.log(err);\n    });\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    let text = event.queryStringParameters.text;\n    console.log(text);\n\n    ddb.scan({\n        TableName: 'slack_messages',\n        ExpressionAttributeValues: {\n            ':text': text\n        },\n        FilterExpression: \"contains(message, :text)\"\n    }).promise().then(function (data) {\n        //your logic goes here\n        console.log(data);\n        let reponse = {\n            \"isBase64Encoded\": true,\n            \"statusCode\": 200,\n            \"headers\": {\n                \"headerName\": \"headerValue\"\n            },\n            \"body\": JSON.stringify(data.Items)\n        }\n        callback(null, reponse)\n    }).catch(function (err) {\n        //handle error\n        console.log(err);\n        let response = {\n            \"isBase64Encoded\": true,\n            \"statusCode\": 502,\n            \"headers\": {\n                \"Access-Control-Allow-Origin\": \"*\",\n                \"Access-Control-Allow-Methods\": \"*\"\n            },\n            \"body\": JSON.stringify({\"err\":\"data not found\"})\n        }\n    });\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1slackapichatsget",
@@ -190,7 +190,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1550486749185
+    "lastSave": 1550488606034
   },
   "VCS_STATE": {
     "provider": "GitHub",

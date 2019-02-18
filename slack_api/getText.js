@@ -5,7 +5,7 @@ exports.handler = function (event, context, callback) {
 
     let text = event.queryStringParameters.text;
     console.log(text);
-    
+
     ddb.scan({
         TableName: 'slack_messages',
         ExpressionAttributeValues: {
@@ -27,5 +27,14 @@ exports.handler = function (event, context, callback) {
     }).catch(function (err) {
         //handle error
         console.log(err);
+        let response = {
+            "isBase64Encoded": true,
+            "statusCode": 502,
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "*"
+            },
+            "body": JSON.stringify({"err":"data not found"})
+        }
     });
 }
