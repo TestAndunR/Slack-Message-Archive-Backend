@@ -22,7 +22,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "slack_api/lambda.js",
-        "code": "exports.handler = function(event, context, callback) {\n    console.log(event);\n    callback(null, {\"message\": \"Successfully executed\"});\n}",
+        "code": "exports.handler = function (event, context, callback) {\n    console.log(event);\n    let response = {\n        \"isBase64Encoded\": true,\n        \"statusCode\": 200,\n        \"body\": { \"challenge\": event.challenge }\n    }\n    callback(null, response);\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1slackapiany",
@@ -90,7 +90,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1550480630660
+    "lastSave": 1550481318604
   },
   "VCS_STATE": {
     "provider": "GitHub",
