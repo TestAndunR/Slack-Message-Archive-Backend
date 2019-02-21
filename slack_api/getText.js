@@ -19,7 +19,8 @@ exports.handler = function (event, context, callback) {
             "isBase64Encoded": true,
             "statusCode": 200,
             "headers": {
-                "headerName": "headerValue"
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "*"
             },
             "body": JSON.stringify(data.Items)
         }

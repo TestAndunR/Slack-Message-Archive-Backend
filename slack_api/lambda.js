@@ -1,5 +1,6 @@
 let AWS = require('aws-sdk');
 const ddb = new AWS.DynamoDB.DocumentClient();
+const axios = require('axios');
 
 exports.handler = function (event, context, callback) {
     if (event.challenge) {
@@ -11,6 +12,10 @@ exports.handler = function (event, context, callback) {
     let message = event.event.text;
     let senderId = event.event.user;
     let timestamp = event.event.ts
+    console.log(env.process.slack_token);
+    axios.get("https://slack.com/api/users.list?token="+env.process.slack_token)
+        .then(data => console.log(data))
+        .catch(err => console.log(err))
     ddb.put({
         TableName: 'slack_messages',
         Item: { 'message_id': messageId, 'message': message, 'sender_Id': senderId, 'timestamp': timestamp }
