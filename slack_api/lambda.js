@@ -14,7 +14,7 @@ exports.handler = function (event, context, callback) {
     let timestamp = event.event.ts
     console.log(process.env.slack_token);
     axios.get("https://slack.com/api/users.list?token="+process.env.slack_token)
-        .then(data => console.log(data))
+        .then(data => console.log(data.members.find(user => user.id === senderId).name))
         .catch(err => console.log(err))
     ddb.put({
         TableName: 'slack_messages',
