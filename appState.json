@@ -23,7 +23,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "slack_api/lambda.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\nconst axios = require('axios');\n\nexports.handler = function (event, context, callback) {\n    if (event.challenge) {\n        callback(null, { \"challenge\": event.challenge });\n        return;\n    }\n    console.log(event);\n    let messageId = event.event.client_msg_id;\n    let message = event.event.text;\n    let senderId = event.event.user;\n    let timestamp = event.event.ts\n    console.log(env.process.slack_token);\n    axios.get(\"https://slack.com/api/users.list?token=\"+process.env.slack_token)\n        .then(data => console.log(data))\n        .catch(err => console.log(err))\n    ddb.put({\n        TableName: 'slack_messages',\n        Item: { 'message_id': messageId, 'message': message, 'sender_Id': senderId, 'timestamp': timestamp }\n    }).promise().then(function (data) {\n        //your logic goes here\n        console.log(data);\n    }).catch(function (err) {\n        //handle error\n        console.log(err)\n    });\n\n\n    callback(null, { \"message\": \"Success\" })\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\nconst axios = require('axios');\n\nexports.handler = function (event, context, callback) {\n    if (event.challenge) {\n        callback(null, { \"challenge\": event.challenge });\n        return;\n    }\n    console.log(event);\n    let messageId = event.event.client_msg_id;\n    let message = event.event.text;\n    let senderId = event.event.user;\n    let timestamp = event.event.ts\n    console.log(process.env.slack_token);\n    axios.get(\"https://slack.com/api/users.list?token=\"+process.env.slack_token)\n        .then(data => console.log(data))\n        .catch(err => console.log(err))\n    ddb.put({\n        TableName: 'slack_messages',\n        Item: { 'message_id': messageId, 'message': message, 'sender_Id': senderId, 'timestamp': timestamp }\n    }).promise().then(function (data) {\n        //your logic goes here\n        console.log(data);\n    }).catch(function (err) {\n        //handle error\n        console.log(err)\n    });\n\n\n    callback(null, { \"message\": \"Success\" })\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1slackapiany",
@@ -202,7 +202,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1550732859290
+    "lastSave": 1550733060805
   },
   "VCS_STATE": {
     "provider": "GitHub",
