@@ -4,7 +4,7 @@ const ddb = new AWS.DynamoDB.DocumentClient();
 exports.handler = function (event, context, callback) {
 
     let text = event.queryStringParameters.text;
-    console.log(text);
+    console.log("event",text);
 
     switch (text) {
         case ("@" + text.slice(1)):
@@ -44,9 +44,9 @@ exports.handler = function (event, context, callback) {
                 callback(response, null)
             });
             break;
-        case ("#" + text.slice(1)):
+        case ("_" + text.slice(1)):
             let channel_id = event.queryStringParameters.text.slice(1);
-            console.log(channel_id);
+            console.log("aaaaaa",channel_id);
             ddb.scan({
                 TableName: 'slack_messages',
                 ExpressionAttributeValues: {
@@ -68,7 +68,7 @@ exports.handler = function (event, context, callback) {
                 callback(null, reponse)
             }).catch(function (err) {
                 //handle error
-                console.log(err);
+                console.log("error", err);
                 let response = {
                     "isBase64Encoded": true,
                     "statusCode": 502,
