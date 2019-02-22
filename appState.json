@@ -9,7 +9,8 @@
         "isDirectory": true,
         "children": [
           "0a0b87a8-60b8-4743-8624-c874ecc33c0a",
-          "4f9c646d-0a42-4509-ad47-8713fc21f862"
+          "4f9c646d-0a42-4509-ad47-8713fc21f862",
+          "06153953-7294-45e3-955c-844fa021f92e"
         ],
         "isRemovable": false,
         "filePath": "slack_api"
@@ -55,7 +56,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "slack_api/getText.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    let text = event.queryStringParameters.text;\n    console.log(text);\n\n    ddb.scan({\n        TableName: 'slack_messages',\n        ExpressionAttributeValues: {\n            ':text': text\n        },\n        FilterExpression: \"contains(message, :text)\"\n    }).promise().then(function (data) {\n        //your logic goes here\n        console.log(data);\n        let reponse = {\n            \"isBase64Encoded\": true,\n            \"statusCode\": 200,\n            \"headers\": {\n                \"Access-Control-Allow-Origin\": \"*\",\n                \"Access-Control-Allow-Methods\": \"*\"\n            },\n            \"body\": JSON.stringify(data.Items)\n        }\n        callback(null, reponse)\n    }).catch(function (err) {\n        //handle error\n        console.log(err);\n        let response = {\n            \"isBase64Encoded\": true,\n            \"statusCode\": 502,\n            \"headers\": {\n                \"Access-Control-Allow-Origin\": \"*\",\n                \"Access-Control-Allow-Methods\": \"*\"\n            },\n            \"body\": JSON.stringify({\"err\":\"data not found\"})\n        }\n    });\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\n    let text = event.queryStringParameters.text;\n    console.log(text);\n\n    if (text.startsWith(\"@\")) {\n        let sender_id = event.queryStringParameters.text.splice(1);\n        ddb.scan({\n            TableName: 'slack_messages',\n            ExpressionAttributeValues: {\n                ':text': sender_id\n            },\n            FilterExpression: 'sender_Id = :text'\n        }).promise().then(function (data) {\n            //your logic goes here\n            console.log(data);\n            let reponse = {\n                \"isBase64Encoded\": true,\n                \"statusCode\": 200,\n                \"headers\": {\n                    \"Access-Control-Allow-Origin\": \"*\",\n                    \"Access-Control-Allow-Methods\": \"*\"\n                },\n                \"body\": JSON.stringify(data.Items)\n            }\n            callback(null, reponse)\n        }).catch(function (err) {\n            //handle error\n            console.log(err);\n            let response = {\n                \"isBase64Encoded\": true,\n                \"statusCode\": 502,\n                \"headers\": {\n                    \"Access-Control-Allow-Origin\": \"*\",\n                    \"Access-Control-Allow-Methods\": \"*\"\n                },\n                \"body\": JSON.stringify({ \"err\": \"data not found\" })\n            }\n            callback(response, null)\n        });\n\n    } else {\n\n        ddb.scan({\n            TableName: 'slack_messages',\n            ExpressionAttributeValues: {\n                ':text': text\n            },\n            FilterExpression: \"contains(message, :text)\"\n        }).promise().then(function (data) {\n            //your logic goes here\n            console.log(data);\n            let reponse = {\n                \"isBase64Encoded\": true,\n                \"statusCode\": 200,\n                \"headers\": {\n                    \"Access-Control-Allow-Origin\": \"*\",\n                    \"Access-Control-Allow-Methods\": \"*\"\n                },\n                \"body\": JSON.stringify(data.Items)\n            }\n            callback(null, reponse)\n        }).catch(function (err) {\n            //handle error\n            console.log(err);\n            let response = {\n                \"isBase64Encoded\": true,\n                \"statusCode\": 502,\n                \"headers\": {\n                    \"Access-Control-Allow-Origin\": \"*\",\n                    \"Access-Control-Allow-Methods\": \"*\"\n                },\n                \"body\": JSON.stringify({ \"err\": \"data not found\" })\n            }\n            callback(response, null)\n        });\n    }\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1slackapichatsget",
@@ -77,15 +78,35 @@
             "event": "{\n    \"text\":\"test\"\n}"
           }
         }
+      },
+      "06153953-7294-45e3-955c-844fa021f92e": {
+        "id": "06153953-7294-45e3-955c-844fa021f92e",
+        "parent": "59117187-76a7-4e3d-b0d1-e3dcc3f6d16c",
+        "name": "getTextWithUser.js",
+        "type": "LAMBDA_FILE",
+        "isDirectory": false,
+        "children": [],
+        "isRemovable": true,
+        "filePath": "slack_api/getTextWithUser.js",
+        "code": "exports.handler = function(event, context, callback) {\n    \n    callback(null, {\"message\": \"Successfully executed\"});\n}",
+        "triggers": [],
+        "config": {
+          "runtime": "nodejs8.10",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        }
       }
     },
     "deletedFiles": [],
     "rootNode": "59117187-76a7-4e3d-b0d1-e3dcc3f6d16c",
     "openFiles": [
       "0a0b87a8-60b8-4743-8624-c874ecc33c0a",
-      "4f9c646d-0a42-4509-ad47-8713fc21f862"
+      "4f9c646d-0a42-4509-ad47-8713fc21f862",
+      "06153953-7294-45e3-955c-844fa021f92e"
     ],
-    "currentFileId": "0a0b87a8-60b8-4743-8624-c874ecc33c0a",
+    "currentFileId": "4f9c646d-0a42-4509-ad47-8713fc21f862",
     "resources": {
       "apigusEast1slackapiany": {
         "name": "apigusEast1slackapiany",
@@ -125,9 +146,9 @@
           "parameters": {
             "TableName": "slack_messages",
             "ExpressionAttributeValues": {
-              ":text": "@{text}"
+              ":text": "text"
             },
-            "FilterExpression": "message = :"
+            "FilterExpression": "sender_Id = :"
           },
           "triggerParams": {},
           "validator": {
@@ -202,7 +223,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1550744704698
+    "lastSave": 1550811767628
   },
   "VCS_STATE": {
     "provider": "GitHub",

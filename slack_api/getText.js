@@ -6,36 +6,76 @@ exports.handler = function (event, context, callback) {
     let text = event.queryStringParameters.text;
     console.log(text);
 
-    ddb.scan({
-        TableName: 'slack_messages',
-        ExpressionAttributeValues: {
-            ':text': text
-        },
-        FilterExpression: "contains(message, :text)"
-    }).promise().then(function (data) {
-        //your logic goes here
-        console.log(data);
-        let reponse = {
-            "isBase64Encoded": true,
-            "statusCode": 200,
-            "headers": {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "*"
+    if (text.startsWith("@")) {
+        let sender_id = event.queryStringParameters.text.splice(1);
+        ddb.scan({
+            TableName: 'slack_messages',
+            ExpressionAttributeValues: {
+                ':text': sender_id
             },
-            "body": JSON.stringify(data.Items)
-        }
-        callback(null, reponse)
-    }).catch(function (err) {
-        //handle error
-        console.log(err);
-        let response = {
-            "isBase64Encoded": true,
-            "statusCode": 502,
-            "headers": {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "*"
+            FilterExpression: 'sender_Id = :text'
+        }).promise().then(function (data) {
+            //your logic goes here
+            console.log(data);
+            let reponse = {
+                "isBase64Encoded": true,
+                "statusCode": 200,
+                "headers": {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "*"
+                },
+                "body": JSON.stringify(data.Items)
+            }
+            callback(null, reponse)
+        }).catch(function (err) {
+            //handle error
+            console.log(err);
+            let response = {
+                "isBase64Encoded": true,
+                "statusCode": 502,
+                "headers": {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "*"
+                },
+                "body": JSON.stringify({ "err": "data not found" })
+            }
+            callback(response, null)
+        });
+
+    } else {
+
+        ddb.scan({
+            TableName: 'slack_messages',
+            ExpressionAttributeValues: {
+                ':text': text
             },
-            "body": JSON.stringify({"err":"data not found"})
-        }
-    });
+            FilterExpression: "contains(message, :text)"
+        }).promise().then(function (data) {
+            //your logic goes here
+            console.log(data);
+            let reponse = {
+                "isBase64Encoded": true,
+                "statusCode": 200,
+                "headers": {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "*"
+                },
+                "body": JSON.stringify(data.Items)
+            }
+            callback(null, reponse)
+        }).catch(function (err) {
+            //handle error
+            console.log(err);
+            let response = {
+                "isBase64Encoded": true,
+                "statusCode": 502,
+                "headers": {
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Methods": "*"
+                },
+                "body": JSON.stringify({ "err": "data not found" })
+            }
+            callback(response, null)
+        });
+    }
 }
