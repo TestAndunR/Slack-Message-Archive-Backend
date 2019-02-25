@@ -87,7 +87,7 @@ exports.handler = function (event, context, callback) {
             ExpressionAttributeValues: {
                 ':text': text
             },
-            FilterExpression: "contains(message, :text)"
+            FilterExpression: "contains(messageInLowerCase, :text)"
         }).promise().then(function (data) {
             //your logic goes here
             console.log(data);
