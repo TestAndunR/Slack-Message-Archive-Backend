@@ -11,11 +11,12 @@ exports.handler = function (event, context, callback) {
     let messageId = event.event.client_msg_id;
     let message = event.event.text;
     let senderId = event.event.user;
-    let timestamp = event.event.ts
-    let channelId = event.event.channel
+    let timestamp = event.event.ts;
+    let channelId = event.event.channel;
+    let messageInLowerCase = event.event.toLocaleLowerCase();
     ddb.put({
         TableName: 'slack_messages',
-        Item: { 'message_id': messageId, 'message': message, 'sender_Id': senderId, 'timestamp': timestamp, channel_Id: channelId }
+        Item: { 'message_id': messageId, 'message': message, 'sender_Id': senderId, 'timestamp': timestamp, 'channel_Id': channelId, 'messageInLowerCase': messageInLowerCase }
     }).promise().then(function (data) {
         //your logic goes here
         console.log(data);
