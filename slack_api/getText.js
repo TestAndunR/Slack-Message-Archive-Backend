@@ -113,7 +113,7 @@ exports.handler = function (event, context, callback) {
                 },
                 "body": JSON.stringify({ "err": "data not found" })
             }
-            callback(response, null)
+            callback(null, response)
         });
     }
 }
