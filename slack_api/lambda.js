@@ -7,7 +7,7 @@ exports.handler = function (event, context, callback) {
         callback(null, { "challenge": event.challenge });
         return;
     }
-    console.log(event.event.text.toLocaleLowerCase());
+    console.log(event.event);
     let messageId = event.event.client_msg_id;
     let message = event.event.text;
     let senderId = event.event.user;
