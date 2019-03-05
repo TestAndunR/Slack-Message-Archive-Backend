@@ -7,14 +7,15 @@ exports.handler = function (event, context, callback) {
         callback(null, { "challenge": event.challenge });
         return;
     }
-    console.log(event.event);
+    // console.log(event.event);
     let messageId = event.event.client_msg_id;
-    let message = event.event.text;
+    let message = event.event.text !== ''? event.event.text : "no";
     let senderId = event.event.user;
     let timestamp = event.event.ts;
     let channelId = event.event.channel;
-    let messageInLowerCase = event.event.text !== ''? event.event.text.toLocaleLowerCase() : "-";
+    let messageInLowerCase = event.event.text !== ''? event.event.text.toLocaleLowerCase() : "no";
     let files = event.event.files.lenth !== 0 || undefined ? event.event.files : [];
+    console.log(message, messageInLowerCase, messageId, senderId, timestamp, channelId, files);
     ddb.put({
         TableName: 'slack_messages',
         Item: {
