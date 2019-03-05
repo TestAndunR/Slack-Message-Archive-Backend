@@ -24,7 +24,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "slack_api/lambda.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\nconst axios = require('axios');\n\nexports.handler = function (event, context, callback) {\n    if (event.challenge) {\n        callback(null, { \"challenge\": event.challenge });\n        return;\n    }\n    console.log(event.event);\n    let messageId = event.event.client_msg_id;\n    let message = event.event.text;\n    let senderId = event.event.user;\n    let timestamp = event.event.ts;\n    let channelId = event.event.channel;\n    let messageInLowerCase = event.event.text.toLocaleLowerCase();\n    ddb.put({\n        TableName: 'slack_messages',\n        Item: { 'message_id': messageId, 'message': message, 'sender_Id': senderId, 'timestamp': timestamp, 'channel_Id': channelId, 'messageInLowerCase': messageInLowerCase }\n    }).promise().then(function (data) {\n        //your logic goes here\n        console.log(data);\n    }).catch(function (err) {\n        //handle error\n        console.log(err)\n    });\n\n\n    callback(null, { \"message\": \"Success\" })\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\nconst axios = require('axios');\n\nexports.handler = function (event, context, callback) {\n    if (event.challenge) {\n        callback(null, { \"challenge\": event.challenge });\n        return;\n    }\n    console.log(event.event);\n    let messageId = event.event.client_msg_id;\n    let message = event.event.text;\n    let senderId = event.event.user;\n    let timestamp = event.event.ts;\n    let channelId = event.event.channel;\n    let messageInLowerCase = event.event.text !== ''? event.event.text.toLocaleLowerCase() : \"-\";\n    let files = event.event.files.lenth !== 0 || undefined ? event.event.files : [];\n    ddb.put({\n        TableName: 'slack_messages',\n        Item: {\n            'message_id': messageId,\n            'message': message,\n            'sender_Id': senderId,\n            'timestamp': timestamp,\n            'channel_Id': channelId,\n            'messageInLowerCase': messageInLowerCase,\n            'files': files\n        }\n    }).promise().then(function (data) {\n        //your logic goes here\n        console.log(data);\n    }).catch(function (err) {\n        //handle error\n        console.log(err)\n    });\n\n\n    callback(null, { \"message\": \"Success\" })\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1slackapiany",
@@ -132,7 +132,7 @@
         "type": "DynamoDB",
         "config": {
           "mode": 0,
-          "operation": "scan",
+          "operation": "put",
           "table": {
             "arn": "",
             "name": "slack_messages",
@@ -145,10 +145,15 @@
           },
           "parameters": {
             "TableName": "slack_messages",
-            "ExpressionAttributeValues": {
-              ":text": "@{channel_id}"
-            },
-            "FilterExpression": "channel_Id = :text"
+            "Item": {
+              "message_id": "@{messageId}",
+              "message": "@{message}",
+              "sender_Id": "@{senderId}",
+              "timestamp": "@{timestamp}",
+              "channel_Id": "@{channelId}",
+              "messageInLowerCase": "@{messageInLowerCase}",
+              "files": "@{files}"
+            }
           },
           "triggerParams": {},
           "validator": {
@@ -223,7 +228,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1551778210500
+    "lastSave": 1551780735739
   },
   "VCS_STATE": {
     "provider": "GitHub",
