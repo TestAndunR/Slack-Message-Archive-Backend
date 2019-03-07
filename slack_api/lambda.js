@@ -64,7 +64,7 @@ exports.handler = function (event, context, callback) {
             let timestamp = event.event.ts;
             let channelId = event.event.channel;
             let messageInLowerCase = event.event.text !== '' ? event.event.text.toLocaleLowerCase() : "-";
-            let files = event.event.files.lenth !== 0 || undefined ? JSON.stringify(event.event.files) : JSON.stringify([]);
+            let files = event.event.files !==  undefined ? JSON.stringify(event.event.files) : JSON.stringify([]);
             console.log(message, messageInLowerCase, messageId, senderId, timestamp, channelId, files);
             ddb.put({
                 TableName: 'slack_messages',
