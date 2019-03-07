@@ -59,11 +59,11 @@ exports.handler = function (event, context, callback) {
         default:
             console.log(event.event);
             messageId = event.event.client_msg_id;
-            message = event.event.text !== '' ? event.event.text : "no";
+            message = event.event.text !== '' ? event.event.text : "-";
             let senderId = event.event.user;
             let timestamp = event.event.ts;
             let channelId = event.event.channel;
-            let messageInLowerCase = event.event.text !== '' ? event.event.text.toLocaleLowerCase() : "no";
+            let messageInLowerCase = event.event.text !== '' ? event.event.text.toLocaleLowerCase() : "-";
             let files = event.event.files.lenth !== 0 || undefined ? JSON.stringify(event.event.files) : JSON.stringify([]);
             console.log(message, messageInLowerCase, messageId, senderId, timestamp, channelId, files);
             ddb.put({
