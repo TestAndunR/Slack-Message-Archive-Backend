@@ -24,7 +24,7 @@
         "children": [],
         "isRemovable": true,
         "filePath": "slack_api/lambda.js",
-        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\nconst axios = require('axios');\n\nexports.handler = function (event, context, callback) {\n    if (event.challenge) {\n        callback(null, { \"challenge\": event.challenge });\n        return;\n    }\n    console.log(event.event);\n    let messageId = event.event.client_msg_id;\n    let message = event.event.text !== ''? event.event.text : \"no\";\n    let senderId = event.event.user;\n    let timestamp = event.event.ts;\n    let channelId = event.event.channel;\n    let messageInLowerCase = event.event.text !== ''? event.event.text.toLocaleLowerCase() : \"no\";\n    let files = event.event.files.lenth !== 0 || undefined ? JSON.stringify(event.event.files) : JSON.stringify([]);\n    console.log(message, messageInLowerCase, messageId, senderId, timestamp, channelId, files);\n    ddb.put({\n        TableName: 'slack_messages',\n        Item: {\n            'message_id': messageId,\n            'message': message,\n            'sender_Id': senderId,\n            'timestamp': timestamp,\n            'channel_Id': channelId,\n            'messageInLowerCase': messageInLowerCase,\n            'files': files\n        }\n    }).promise().then(function (data) {\n        //your logic goes here\n        console.log(data);\n    }).catch(function (err) {\n        //handle error\n        console.log(err)\n    });\n\n\n    callback(null, { \"message\": \"Success\" })\n}",
+        "code": "let AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\nconst axios = require('axios');\n\nexports.handler = function (event, context, callback) {\n    if (event.challenge) {\n        callback(null, { \"challenge\": event.challenge });\n        return;\n    }\n    if (event.event.subtype === \"message_changed\") {\n        let messageId = event.event.message.client_msg_idl;\n        let message = event.event.message.text;\n        ddb.update({\n            TableName: 'slack_messages',\n            Key: {\n                'message_id': messageId\n            },\n            ExpressionAttributeNames: {\n                '#message': 'message',\n                '#messageInLowerCase': 'messageInLowerCase',\n                '#messageId': 'messageId'\n            },\n            ExpressionAttributeValues: {\n                ':message': message,\n                ':messageInLowerCase': messageInLowerCase,\n                ':messageId': messageId\n            },\n            UpdateExpression: 'set #message = :message , #messageInLowerCase = :messageInLowerCase',\n            ConditionExpression: '#messageId = :messageId'\n        }).promise().then(function (data) {\n            //your logic goes here\n            console.log(data);\n        }).catch(function (err) {\n            //handle error\n            console.log(err);\n        });\n        let messageInLowerCase = event.event.message.text.toLocaleLowerCase();\n    }\n    console.log(event.event);\n    let messageId = event.event.client_msg_id;\n    let message = event.event.text !== '' ? event.event.text : \"no\";\n    let senderId = event.event.user;\n    let timestamp = event.event.ts;\n    let channelId = event.event.channel;\n    let messageInLowerCase = event.event.text !== '' ? event.event.text.toLocaleLowerCase() : \"no\";\n    let files = event.event.files.lenth !== 0 || undefined ? JSON.stringify(event.event.files) : JSON.stringify([]);\n    console.log(message, messageInLowerCase, messageId, senderId, timestamp, channelId, files);\n    ddb.put({\n        TableName: 'slack_messages',\n        Item: {\n            'message_id': messageId,\n            'message': message,\n            'sender_Id': senderId,\n            'timestamp': timestamp,\n            'channel_Id': channelId,\n            'messageInLowerCase': messageInLowerCase,\n            'files': files\n        }\n    }).promise().then(function (data) {\n        //your logic goes here\n        console.log(data);\n    }).catch(function (err) {\n        //handle error\n        console.log(err)\n    });\n\n\n    callback(null, { \"message\": \"Success\" })\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1slackapiany",
@@ -132,7 +132,7 @@
         "type": "DynamoDB",
         "config": {
           "mode": 0,
-          "operation": "put",
+          "operation": "update",
           "table": {
             "arn": "",
             "name": "slack_messages",
@@ -145,15 +145,21 @@
           },
           "parameters": {
             "TableName": "slack_messages",
-            "Item": {
-              "message_id": "@{messageId}",
-              "message": "@{message}",
-              "sender_Id": "@{senderId}",
-              "timestamp": "@{timestamp}",
-              "channel_Id": "@{channelId}",
-              "messageInLowerCase": "@{messageInLowerCase}",
-              "files": "@{files}"
-            }
+            "Key": {
+              "message_id": "@{messageId}"
+            },
+            "ExpressionAttributeNames": {
+              "#message": "message",
+              "#messageInLowerCase": "messageInLowerCase",
+              "#messageId": "messageId"
+            },
+            "ExpressionAttributeValues": {
+              ":message": "@{message}",
+              ":messageInLowerCase": "@{messageInLowerCase}",
+              ":messageId": "@{messageId}"
+            },
+            "UpdateExpression": "set #message = :message , #messageInLowerCase = :messageInLowerCase",
+            "ConditionExpression": "#messageId = :messageId"
           },
           "triggerParams": {},
           "validator": {
@@ -228,7 +234,7 @@
     "projectRegion": "us-east-1",
     "platform": "AWS",
     "platformRegions": {},
-    "lastSave": 1551939394568
+    "lastSave": 1551940838491
   },
   "VCS_STATE": {
     "provider": "GitHub",
